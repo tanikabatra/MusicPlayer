@@ -32,17 +32,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
-        readFileSystem();
+        readFileSystem(Environment.getExternalStorageDirectory());
     }
 
 
-    void readFileSystem(){
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() ;
-        File file = new File(path);
-        File[] files = file.listFiles();
+    void readFileSystem(File dir){
+       // String path = Environment.getExternalStorageDirectory().getAbsolutePath() ;
+       // File file = new File(path);
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (int i = 0; i < files.length; i++) {
+                FileBean fileBean = new FileBean();
 
 
-        for (File f : files){
+                if (files[i].isDirectory()) {
+                    readFileSystem(files[i]);
+                } else {
+                    if (files[i].getName().endsWith(".mp3")){
+                        fileBean.setIcon(R.drawable.music);
+                        fileBean.setTitle(files[i].getName());
+                        fileList.add(fileBean);
+
+                    }
+                }
+            }
+        }
+
+        /*for (File f : files){
             FileBean fileBean = new FileBean();
 
 
@@ -50,13 +66,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 fileBean.setIcon(R.drawable.music);
                 fileBean.setTitle(f.getName());
                 fileList.add(fileBean);
-            }
+            }*/
            /* else if (f.isDirectory()){
                 fileBean.setIcon(R.drawable.folder);
                 fileBean.setTitle(f.getName());
             }*/
 
-        }
+
 
         fileAdapter = new FileAdapter(this,R.layout.list_item,fileList);
         listView.setAdapter(fileAdapter);
